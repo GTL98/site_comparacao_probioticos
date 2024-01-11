@@ -13,9 +13,12 @@ def obter_seqs(cluster: str, probiotico: str) -> dict:
         # --- Criar o dicionário que armazenara as sequências --- #
         dic_seq = {}
 
+        # --- Tratar a entrada do cluster --- #
+        cluster_numero = cluster.split('-')[1].strip()
+
         # --- Ler o arquivo FASTA --- #
         contador = 0
-        for registro in SeqIO.parse(f'./probioticos_50/Cluster_{cluster}.fasta', 'fasta'):
+        for registro in SeqIO.parse(f'./probioticos_50/Cluster_{cluster_numero}.fasta', 'fasta'):
             if probiotico not in registro.description:
                 bacteria = registro.description.split('[')[1][:-1].strip()
                 dic_seq[f'{contador}_{bacteria}'] = registro.seq
