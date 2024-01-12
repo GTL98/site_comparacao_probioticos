@@ -16,7 +16,7 @@ with open('probioticos_bd.txt', 'r') as txt:
     conteudo = txt.readlines()
     probioticos_bd = sorted([bacteria[:-1] for bacteria in conteudo])
 
-# --- Criar a caixa de seleção com  as bactérias probióticas do banco de dados --- #
+# --- Criar a caixa de seleção com as bactérias probióticas do banco de dados --- #
 probioticos = st.selectbox(
     label='Escolha uma bactéria:',
     options=probioticos_bd,
@@ -24,7 +24,7 @@ probioticos = st.selectbox(
     index=None
 )
 
-# --- Ler os arquivos FASTA e ver em quais cluster a bactéria está --- #
+# --- Ler os arquivos FASTA e ver em quais clusters a bactéria está --- #
 arquivos_fasta = []
 for arquivo in os.listdir('./probioticos_50'):
     for registro in SeqIO.parse(f'./probioticos_50/{arquivo}', 'fasta'):
@@ -46,12 +46,21 @@ for arquivo in arquivos_fasta:
         lista_clusters.append(item)
 
 # --- Criar uma lista com os clusters em que o probiótico está --- #
-# lista_clusters = sorted([int(cluster) for cluster in arquivos_fasta])
 clusters = st.selectbox(
     label='Escolha um cluster:',
     options=sorted(lista_clusters),
     placeholder='Selecione um cluster',
     index=None
+)
+
+# --- Escolher entre o valor absoluto e a porcentagem da distância de Hamming --- #
+escolha = st.radio(
+    label='Escolha uma opção:',
+    options=(
+        'Absoluto',
+        'Porcentagem'
+    ),
+    horizontal=True
 )
 
 # --- Armazenar em uma variável o dicionário com as sequências --- #
@@ -88,5 +97,7 @@ if len(lista_dis_hamm) != 0:
     gerar_grafico(
         intervalo[0],
         intervalo[1],
-        dic_distancia
+        dic_distancia,
+        len(str(seq_probiotico)),
+        escolha
     )
