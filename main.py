@@ -40,10 +40,15 @@ with open('indices_clusters.json', 'r', encoding='utf-8') as doc:
 
 # --- Colocar qual a função junto com o cluster --- #
 lista_clusters = []
+
 for arquivo in arquivos_fasta:
-    item = f'{dados_json[arquivo]} - {arquivo}'
-    if item not in lista_clusters:
-        lista_clusters.append(item)
+    try:
+        item = f'{dados_json[arquivo]} - {arquivo}'
+    except KeyError:
+        pass
+    else:
+        if item not in lista_clusters:
+            lista_clusters.append(item)
 
 # --- Criar uma lista com os clusters em que o probiótico está --- #
 clusters = st.selectbox(
