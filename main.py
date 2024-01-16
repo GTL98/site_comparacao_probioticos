@@ -4,9 +4,11 @@ from Bio import SeqIO
 from json import load
 import streamlit as st
 from obter_seqs import obter_seqs
-from gerar_grafico import gerar_grafico
 from distancia_hamm import distancia_hamm
+from distancia_hamm_aa import distancia_hamm_aa
+from gerar_grafico_hamm import gerar_grafico_hamm
 from obter_seq_probiotico import obter_seq_probiotico
+from gerar_grafico_hamm_aa import gerar_grafico_hamm_aa
 
 # --- Configuração da página --- #
 st.set_page_config(page_title='Novos Probióticos')
@@ -59,7 +61,7 @@ clusters = st.selectbox(
 )
 
 # --- Escolher entre o valor absoluto e a porcentagem da distância de Hamming --- #
-escolha = st.radio(
+escolha_grafico = st.radio(
     label='Escolha uma opção:',
     options=(
         'Absoluto',
@@ -86,23 +88,68 @@ if dic_seqs is not None:
 # --- Criar uma lista com as distâncias de Hamming que será usada como intervalo para os gráficos --- #
 lista_dis_hamm = [distancia for distancia in dic_distancia.values()]
 
-# --- Criar o slider do intervalo --- #
-if len(lista_dis_hamm) != 0:
-    intervalo = st.slider(
-        label='Escolha um intervalo:',
-        min_value=min(lista_dis_hamm),
-        max_value=max(lista_dis_hamm),
-        value=(
-            min(lista_dis_hamm),
-            max(lista_dis_hamm)
-        )
-    )
+# --- Criar um dicionário com as bactérias e o valor da distância de Hamming, respeitando os AAs --- #
+dic_distancia_aa = {}
 
-    # --- Plotar o gráfico --- #
-    gerar_grafico(
-        intervalo[0],
-        intervalo[1],
-        dic_distancia,
-        len(str(seq_probiotico)),
-        escolha
-    )
+# --- Colocar no dicionário as bactérias e a sua distância de Hamming, respeitando os AAs --- #
+if dic_seqs is not None:
+    for bacteria in dic_seqs:
+        distancia = distancia_hamm_aa(seq_probiotico, dic_seqs[bacteria])
+        dic_distancia_aa[bacteria] = distancia
+
+# --- Criar uma lista com as distâncias de Hamming (respeitando os AAs) que será usada como intervalo nos gráficos --- #
+lista_dis_hamm_aa = [distancia for distancia in dic_distancia_aa.values()]
+
+# --- Criar um botão de seleção --- #
+escolha_analise = st.radio(
+    label='Escolha uma opção:',
+    options=(
+        'Sem AA',
+        'Com AA'
+    ),
+    horizontal=True
+)
+
+# --- Criar o slider do intervalo --- #
+if escolha_analise == 'Sem AA':
+    if len(lista_dis_hamm) != 0:
+        intervalo = st.slider(
+            label='Escolha um intervalo:',
+            min_value=min(lista_dis_hamm),
+            max_value=max(lista_dis_hamm),
+            value=(
+                min(lista_dis_hamm),
+                max(lista_dis_hamm)
+            )
+        )
+
+        # --- Plotar o gráfico --- #
+        gerar_grafico_hamm(
+            intervalo[0],
+            intervalo[1],
+            dic_distancia,
+            len(str(seq_probiotico)),
+            escolha_grafico
+        )
+
+# --- Criar o slider do intervalo --- #
+if escolha_analise == 'Com AA':
+    if len(lista_dis_hamm_aa) != 0:
+        intervalo = st.slider(
+            label='Escolha um intervalo:',
+            min_value=min(lista_dis_hamm_aa),
+            max_value=max(lista_dis_hamm_aa),
+            value=(
+                min(lista_dis_hamm_aa),
+                max(lista_dis_hamm_aa)
+            )
+        )
+
+        # --- Plotar o gráfico --- #
+        gerar_grafico_hamm_aa(
+            intervalo[0],
+            intervalo[1],
+            dic_distancia_aa,
+            len(str(seq_probiotico)),
+            escolha_grafico
+        )

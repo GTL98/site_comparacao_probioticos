@@ -1,9 +1,10 @@
 def distancia_hamm(seq_1: object, seq_2: object) -> int:
     """
-    Função responsável por retornar a distância de Hamming entre as sequências.
+    Função responsável por retornar a distância de Hamming entre as sequências sem respeitar
+    as características fisico-químicas dos aminoácidos, somente os mismatches.
     :param seq_1: Sequência 1.
     :param seq_2: Sequência 2.
-    :return: Dicionário com a distância de Hamming entre as sequências.
+    :return: Distância de Hamming entre as sequências de aminoácidos.
     """
     # --- Distância de Hamming --- #
     distancia = 0
